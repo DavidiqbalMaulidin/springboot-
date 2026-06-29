@@ -74,4 +74,14 @@ public class Transaction {
     public void setCategory(Category category) {
         this.category = category;
     }
+
+    public String getFormattedAmount() {
+        java.text.NumberFormat format =
+                java.text.NumberFormat.getInstance(
+                        new java.util.Locale("id", "ID"));
+
+        return "Rp " + format.format(amount);
+    }
+
+    
 }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>DompetKuPlus - Transactions</title>
+    <title>DompetKuPlus Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -48,10 +48,7 @@
             background:linear-gradient(135deg,#2563eb,#4f46e5);
         }
 
-        .content{
-            flex:1;
-            padding:30px;
-        }
+        .content{ flex:1; padding:30px; }
 
         .topbar{
             background:white;
@@ -59,6 +56,29 @@
             padding:20px;
             box-shadow:0 10px 30px rgba(0,0,0,.05);
         }
+
+        .stat-card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.06);
+            transition:.3s;
+        }
+
+        .stat-card:hover{ transform:translateY(-5px); }
+
+        .icon-box{
+            width:60px;
+            height:60px;
+            border-radius:15px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:24px;
+        }
+
+        .income{ background:#dcfce7; color:#16a34a; }
+        .expense{ background:#fee2e2; color:#dc2626; }
+        .balance{ background:#dbeafe; color:#2563eb; }
 
         .table-card{
             border:none;
@@ -72,23 +92,23 @@
 
 <div class="d-flex">
 
-    <!-- SIDEBAR (SAMA DENGAN DASHBOARD) -->
+    <!-- SIDEBAR -->
     <div id="sidebar" class="p-3">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="text-white m-0">
-                <span class="logo-text">DompetKuPlus</span>
+                 <span class="logo-text">DompetKuPlus</span>
             </h4>
 
             <button id="toggleBtn" class="btn btn-sm btn-light">☰</button>
         </div>
 
-        <a href="/" class="sidebar-link">
+        <a href="/" class="sidebar-link active">
             <i class="bi bi-grid-fill"></i>
             <span class="menu-text">Dashboard</span>
         </a>
 
-        <a href="/transactions" class="sidebar-link active">
+        <a href="/transactions" class="sidebar-link">
             <i class="bi bi-cash-stack"></i>
             <span class="menu-text">Transaksi</span>
         </a>
@@ -108,23 +128,76 @@
     <div class="content">
 
         <div class="topbar mb-4">
-            <h2 class="fw-bold">Daftar Transaksi</h2>
+            <h2 class="fw-bold">Dashboard</h2>
             <p class="text-muted mb-0">
-                Semua transaksi pemasukan dan pengeluaran Anda.
+                Pantau kondisi keuangan Anda secara real-time.
             </p>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href="/transactions/add" class="btn btn-success">
-                + Tambah Transaksi
-            </a>
+        <!-- CARDS -->
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <small class="text-muted">Total Pemasukan</small>
+
+                        <h3 class="fw-bold mt-2"
+                            th:text="'Rp ' + ${totalIncome != null ? #numbers.formatDecimal(totalIncome,0,'POINT',0,'COMMA') : '0'}">
+                            Rp 0
+                        </h3>
+
+                        <div class="icon-box income mt-3">
+                            <i class="bi bi-arrow-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <small class="text-muted">Total Pengeluaran</small>
+
+                        <h3 class="fw-bold mt-2"
+                            th:text="'Rp ' + ${totalExpense != null ? #numbers.formatDecimal(totalExpense,0,'POINT',0,'COMMA') : '0'}">
+                            Rp 0
+                        </h3>
+
+                        <div class="icon-box expense mt-3">
+                            <i class="bi bi-arrow-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <small class="text-muted">Saldo Saat Ini</small>
+
+                        <h3 class="fw-bold mt-2"
+                            th:text="'Rp ' + ${balance != null ? #numbers.formatDecimal(balance,0,'POINT',0,'COMMA') : '0'}">
+                            Rp 0
+                        </h3>
+
+                        <div class="icon-box balance mt-3">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- TABLE -->
-        <div class="card table-card">
+        <!-- TRANSAKSI -->
+        <div class="card table-card mt-5">
             <div class="card-body">
 
+                <h4 class="mb-4">Transaksi Terbaru</h4>
+
                 <table class="table align-middle">
+
                     <thead>
                     <tr>
                         <th>No</th>
@@ -132,61 +205,44 @@
                         <th>Deskripsi</th>
                         <th>Kategori</th>
                         <th>Jumlah</th>
-                        <th>Aksi</th>
                     </tr>
                     </thead>
 
                     <tbody>
 
                     <tr th:if="${transactions == null || #lists.isEmpty(transactions)}">
-                        <td colspan="6" class="text-center text-muted">
+                        <td colspan="5" class="text-center text-muted">
                             Belum ada transaksi
                         </td>
                     </tr>
 
-                    <tr th:each="t, stat : ${transactions}">
+                    <tr th:each="trx, stat : ${transactions}">
 
                         <td th:text="${stat.count}"></td>
 
                         <td>
-                            <span th:if="${t.type != null and t.type.name() == 'INCOME'}"
+                            <span th:if="${trx.type != null and trx.type.name() == 'INCOME'}"
                                   class="badge bg-success">
                                 Pemasukan
                             </span>
 
-                            <span th:if="${t.type != null and t.type.name() == 'EXPENSE'}"
+                            <span th:if="${trx.type != null and trx.type.name() == 'EXPENSE'}"
                                   class="badge bg-danger">
                                 Pengeluaran
                             </span>
-
-                            <span th:if="${t.type == null}"
-                                  class="badge bg-secondary">
-                                -
-                            </span>
                         </td>
 
-                        <td th:text="${t.description}"></td>
+                        <td th:text="${trx.description}"></td>
 
-                        <td th:text="${t.category != null ? t.category.name : '-'}"></td>
+                        <!-- FIX UTAMA DI SINI -->
+                        <td th:text="${trx.category != null ? trx.category.name : '-'}"></td>
 
-                        <td th:text="${t.formattedAmount != null ? t.formattedAmount : '0'}"></td>
-
-                        <td>
-                            <a th:href="@{/transactions/edit/{id}(id=${t.id})}"
-                               class="btn btn-warning btn-sm">
-                                Edit
-                            </a>
-
-                            <a th:href="@{/transactions/delete/{id}(id=${t.id})}"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('Yakin ingin menghapus transaksi ini?')">
-                                Hapus
-                            </a>
-                        </td>
+                        <td th:text="${trx.formattedAmount != null ? trx.formattedAmount : '0'}"></td>
 
                     </tr>
 
                     </tbody>
+
                 </table>
 
             </div>
