@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Daftar Transaksi</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <h2>Daftar Transaksi</h2>
+    <a href="/transactions/add"
+    class="btn btn-success mb-3">
+        Tambah Transaksi
+    </a>
+
+    <table class="table table-bordered">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Deskripsi</th>
+            <th>Jumlah</th>
+            <th>Aksi</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="t : ${transactions}">
+
+            <td th:text="${t.id}"></td>
+
+            <td th:text="${t.description}"></td>
+
+            <td th:text="${t.amount}"></td>
+
+            <td>
+                <a th:href="@{/transactions/edit/{id}(id=${t.id})}"
+                class="btn btn-warning btn-sm">
+                    Edit
+                </a>
+                
+                <a th:href="@{/transactions/delete/{id}(id=${t.id})}"
+                class="btn btn-danger btn-sm"
+                onclick="return confirm('Yakin ingin menghapus transaksi ini?')">
+                    Hapus
+                </a>
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>
