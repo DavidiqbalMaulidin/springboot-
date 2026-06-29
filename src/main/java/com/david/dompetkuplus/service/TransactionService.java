@@ -20,6 +20,14 @@ public class TransactionService {
         return repository.findAll();
     }
 
+    public List<Transaction> findLatestTransactions() {
+        return repository.findTop5ByOrderByTransactionDateDesc();
+    }
+
+    public Transaction save(Transaction transaction) {
+        return repository.save(transaction);
+    }
+
     public Transaction save(Transaction transaction) {
         return repository.save(transaction);
     }

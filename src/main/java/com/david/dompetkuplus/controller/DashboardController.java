@@ -22,8 +22,10 @@ public class DashboardController {
         model.addAttribute("balance", transactionService.getBalance());
         model.addAttribute("totalTransaction", transactionService.getTotalTransaction());
 
-        model.addAttribute("transactions", transactionService.findAll());
-
+        model.addAttribute(
+                "transactions",
+                transactionService.findLatestTransactions()
+        );
         return "dashboard";
     }
 }

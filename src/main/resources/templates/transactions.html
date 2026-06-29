@@ -128,6 +128,7 @@
                     <thead>
                     <tr>
                         <th>No</th>
+                        <th>Tanggal</th>
                         <th>Jenis</th>
                         <th>Deskripsi</th>
                         <th>Kategori</th>
@@ -139,7 +140,7 @@
                     <tbody>
 
                     <tr th:if="${transactions == null || #lists.isEmpty(transactions)}">
-                        <td colspan="6" class="text-center text-muted">
+                        <td colspan="7" class="text-center text-muted">
                             Belum ada transaksi
                         </td>
                     </tr>
@@ -147,6 +148,7 @@
                     <tr th:each="t, stat : ${transactions}">
 
                         <td th:text="${stat.count}"></td>
+                        <td th:text="${#temporals.format(t.transactionDate, 'dd MMM yyyy')}"></td>
 
                         <td>
                             <span th:if="${t.type != null and t.type.name() == 'INCOME'}"

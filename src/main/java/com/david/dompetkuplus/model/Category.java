@@ -12,6 +12,9 @@ public class Category {
 
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
     public Category() {
     }
 
@@ -23,8 +26,15 @@ public class Category {
         return name;
     }
 
+    public TransactionType getType() {
+        return type;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
 }

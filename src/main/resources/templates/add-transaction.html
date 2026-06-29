@@ -2,103 +2,308 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
-    <title>Tambah Transaksi</title>
+    <meta charset="UTF-8">
+    <title>Tambah Transaksi | DompetKuPlus</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+
+    <style>
+        body{
+            background:#f5f7fb;
+            overflow-x:hidden;
+        }
+
+        #sidebar{
+            width:260px;
+            min-height:100vh;
+            background:#111827;
+            transition:.3s;
+        }
+
+        #sidebar.collapsed{ width:80px; }
+
+        #sidebar.collapsed .logo-text,
+        #sidebar.collapsed .menu-text{
+            display:none;
+        }
+
+        .sidebar-link{
+            color:white;
+            text-decoration:none;
+            padding:12px 15px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-bottom:8px;
+            transition:.3s;
+        }
+
+        .sidebar-link:hover{ background:#1f2937; }
+
+        .sidebar-link.active{
+            background:linear-gradient(135deg,#2563eb,#4f46e5);
+        }
+
+        .content{ flex:1; padding:30px; }
+
+        .topbar{
+            background:white;
+            border-radius:20px;
+            padding:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.05);
+        }
+
+        .stat-card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.06);
+            transition:.3s;
+        }
+
+        .stat-card:hover{ transform:translateY(-5px); }
+
+        .icon-box{
+            width:60px;
+            height:60px;
+            border-radius:15px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:24px;
+        }
+
+        .income{ background:#dcfce7; color:#16a34a; }
+        .expense{ background:#fee2e2; color:#dc2626; }
+        .balance{ background:#dbeafe; color:#2563eb; }
+
+        .table-card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.06);
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container mt-4">
+<div class="d-flex">
 
-    <h2>Tambah Transaksi</h2>
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="p-3">
 
-    <form th:action="@{/transactions/save}"
-          th:object="${transaction}"
-          method="post">
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <div class="mb-3">
+            <h4 class="text-white m-0">
+                <span class="logo-text">DompetKuPlus</span>
+            </h4>
 
-            <label class="form-label">
-                Deskripsi
-            </label>
-
-            <input type="text"
-                   th:field="*{description}"
-                   class="form-control"
-                   required>
+            <button id="toggleBtn"
+                    class="btn btn-sm btn-light">
+                ☰
+            </button>
 
         </div>
 
-        <div class="mb-3">
+        <a href="/"
+           class="sidebar-link">
 
-            <label class="form-label">
-                Jumlah
-            </label>
+            <i class="bi bi-grid-fill"></i>
+            <span class="menu-text">Dashboard</span>
 
-            <input type="number"
-                th:field="*{amount}"
-                class="form-control"
-                placeholder="Contoh: 100000"
-                required>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label class="form-label">
-                Tanggal
-            </label>
-
-            <input type="date"
-                   th:field="*{transactionDate}"
-                   class="form-control"
-                   required>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label class="form-label">
-                Jenis Transaksi
-            </label>
-
-            <select th:field="*{type}"
-                    class="form-select"
-                    required>
-
-                <option value="">
-                    Pilih Jenis Transaksi
-                </option>
-
-                <option value="INCOME">
-                    Pemasukan
-                </option>
-
-                <option value="EXPENSE">
-                    Pengeluaran
-                </option>
-
-            </select>
-
-        </div>
-
-        <button type="submit"
-                class="btn btn-primary">
-            Simpan
-        </button>
-
-        <a href="/transactions"
-           class="btn btn-secondary">
-            Kembali
         </a>
 
-    </form>
+        <a href="/transactions"
+           class="sidebar-link active">
+
+            <i class="bi bi-cash-stack"></i>
+            <span class="menu-text">Transaksi</span>
+
+        </a>
+
+        <a href="#"
+           class="sidebar-link">
+
+            <i class="bi bi-bullseye"></i>
+            <span class="menu-text">Budgeting</span>
+
+        </a>
+
+        <a href="#"
+           class="sidebar-link">
+
+            <i class="bi bi-bar-chart-fill"></i>
+            <span class="menu-text">Analytics</span>
+
+        </a>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <div class="topbar mb-4">
+
+            <h2 class="fw-bold">
+                Tambah Transaksi
+            </h2>
+
+            <p class="text-muted mb-0">
+                Catat pemasukan atau pengeluaran baru ke dalam sistem.
+            </p>
+
+        </div>
+
+        <div class="card table-card">
+
+            <div class="card-body p-4">
+
+                <form th:action="@{/transactions/save}"
+                      th:object="${transaction}"
+                      method="post">
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Deskripsi
+                        </label>
+
+                        <input type="text"
+                               th:field="*{description}"
+                               class="form-control"
+                               placeholder="Contoh: Gaji Bulanan"
+                               required>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Jumlah
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                Rp
+                            </span>
+
+                            <input type="number"
+                                   th:field="*{amount}"
+                                   class="form-control"
+                                   placeholder="100000"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Tanggal Transaksi
+                        </label>
+
+                        <input type="date"
+                               th:field="*{transactionDate}"
+                               class="form-control"
+                               required>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Jenis Transaksi
+                        </label>
+
+                        <select th:field="*{type}"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Pilih Jenis Transaksi
+                            </option>
+
+                            <option value="INCOME">
+                                💰 Pemasukan
+                            </option>
+
+                            <option value="EXPENSE">
+                                💸 Pengeluaran
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Kategori
+                        </label>
+
+                        <select th:field="*{category}"
+                                class="form-select"
+                                required>
+
+                            <option value="">
+                                Pilih Kategori
+                            </option>
+
+                            <option th:each="category : ${categories}"
+                                    th:value="${category.id}"
+                                    th:text="${category.name}">
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            <i class="bi bi-check-circle"></i>
+                            Simpan Transaksi
+
+                        </button>
+
+                        <a href="/transactions"
+                           class="btn btn-outline-secondary">
+
+                            <i class="bi bi-arrow-left"></i>
+                            Kembali
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
+<script>
+    const sidebar = document.getElementById("sidebar");
+
+    document.getElementById("toggleBtn")
+        .addEventListener("click", () => {
+            sidebar.classList.toggle("collapsed");
+        });
+</script>
+
 </body>
 </html>
+```

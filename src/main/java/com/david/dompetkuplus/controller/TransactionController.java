@@ -10,16 +10,22 @@ import com.david.dompetkuplus.service.TransactionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import com.david.dompetkuplus.repository.CategoryRepository;
 
 @Controller
 public class TransactionController {
 
     private final TransactionService service;
+    private final CategoryRepository categoryRepository;
 
 
     
-    public TransactionController(TransactionService service) {
+    public TransactionController(
+            TransactionService service,
+            CategoryRepository categoryRepository) {
+
         this.service = service;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping("/transactions")
@@ -39,6 +45,11 @@ public class TransactionController {
         model.addAttribute(
                 "transaction",
                 new Transaction()
+        );
+
+        model.addAttribute(
+                "categories",
+                categoryRepository.findAll()
         );
 
         return "add-transaction";
@@ -64,6 +75,11 @@ public class TransactionController {
         model.addAttribute(
                 "transaction",
                 transaction
+        );
+
+        model.addAttribute(
+                "categories",
+                categoryRepository.findAll()
         );
 
         return "edit-transaction";
