@@ -4,6 +4,7 @@ import com.david.dompetkuplus.model.Transaction;
 import com.david.dompetkuplus.model.TransactionType;
 import com.david.dompetkuplus.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
+import java.util.Collections;
 
 import java.util.List;
 
@@ -28,9 +29,6 @@ public class TransactionService {
         return repository.save(transaction);
     }
 
-    public Transaction save(Transaction transaction) {
-        return repository.save(transaction);
-    }
 
     public void delete(Long id) {
         repository.deleteById(id);
@@ -57,4 +55,16 @@ public class TransactionService {
     public Long getTotalTransaction() {
         return repository.count();
     }
+
+    public List<Transaction> getTop5Expenses() {
+
+        List<Transaction> data =
+                repository.findTop5ByTypeOrderByAmountDesc(
+                        TransactionType.EXPENSE);
+
+        return data == null
+                ? Collections.emptyList()
+                : data;
+    }
+
 }

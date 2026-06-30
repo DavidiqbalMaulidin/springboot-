@@ -1,6 +1,7 @@
 package com.david.dompetkuplus.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -13,7 +14,8 @@ public class Transaction {
 
     private String description;
 
-    private Double amount;
+    @Column(nullable = false)
+    private BigDecimal amount;
 
     private LocalDate transactionDate;
 
@@ -27,6 +29,8 @@ public class Transaction {
     public Transaction() {
     }
 
+    // ================= GETTERS & SETTERS =================
+
     public Long getId() {
         return id;
     }
@@ -34,46 +38,48 @@ public class Transaction {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public String getDescription() {
         return description;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public LocalDate getTransactionDate() {
-        return transactionDate;
-    }
-
-    public TransactionType getType() {
-        return type;
-    }
-
-    public Category getCategory() {
-        return category;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setAmount(Double amount) {
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public LocalDate getTransactionDate() {
+        return transactionDate;
     }
 
     public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
     }
 
+    public TransactionType getType() {
+        return type;
+    }
+
     public void setType(TransactionType type) {
         this.type = type;
+    }
+
+    public Category getCategory() {
+        return category;
     }
 
     public void setCategory(Category category) {
         this.category = category;
     }
+
+    // ================= FORMAT DISPLAY =================
 
     public String getFormattedAmount() {
         java.text.NumberFormat format =
@@ -82,6 +88,4 @@ public class Transaction {
 
         return "Rp " + format.format(amount);
     }
-
-    
 }

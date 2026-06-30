@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
-    <title>Edit Transaksi | DompetKuPlus</title>
+    <title>DompetKuPlus - Edit Budget</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -70,25 +69,6 @@
             border-radius:20px;
             box-shadow:0 10px 30px rgba(0,0,0,.06);
         }
-
-        .form-control,
-        .form-select{
-            border-radius:12px;
-            min-height:48px;
-        }
-
-        .input-group-text{
-            border-radius:12px 0 0 12px;
-        }
-
-        .btn{
-            border-radius:12px;
-        }
-
-        .form-label{
-            font-weight:600;
-            color:#374151;
-        }
     </style>
 </head>
 
@@ -100,48 +80,33 @@
     <div id="sidebar" class="p-3">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
-
             <h4 class="text-white m-0">
                 <span class="logo-text">DompetKuPlus</span>
             </h4>
 
-            <button id="toggleBtn"
-                    class="btn btn-sm btn-light">
+            <button id="toggleBtn" class="btn btn-sm btn-light">
                 ☰
             </button>
-
         </div>
 
-        <a href="/"
-           class="sidebar-link">
-
+        <a href="/" class="sidebar-link">
             <i class="bi bi-grid-fill"></i>
             <span class="menu-text">Dashboard</span>
-
         </a>
 
-        <a href="/transactions"
-           class="sidebar-link active">
-
+        <a href="/transactions" class="sidebar-link">
             <i class="bi bi-cash-stack"></i>
             <span class="menu-text">Transaksi</span>
-
         </a>
 
-        <a href="#"
-           class="sidebar-link">
-
+        <a href="/budgeting" class="sidebar-link active">
             <i class="bi bi-bullseye"></i>
             <span class="menu-text">Budgeting</span>
-
         </a>
 
-        <a href="/analytics"
-           class="sidebar-link">
-
+        <a href="/analytics" class="sidebar-link">
             <i class="bi bi-bar-chart-fill"></i>
             <span class="menu-text">Analytics</span>
-
         </a>
 
     </div>
@@ -150,99 +115,24 @@
     <div class="content">
 
         <div class="topbar mb-4">
-
-            <h2 class="fw-bold">
-                Edit Transaksi
-            </h2>
-
+            <h2 class="fw-bold">Edit Budget</h2>
             <p class="text-muted mb-0">
-                Perbarui data transaksi yang telah tersimpan.
+                Perbarui data budget yang sudah ada.
             </p>
-
         </div>
 
         <div class="card table-card">
-
             <div class="card-body p-4">
 
-                <form th:action="@{/transactions/update}"
-                      th:object="${transaction}"
+                <form th:action="@{/budgeting/save}"
+                      th:object="${budget}"
                       method="post">
 
+                    <!-- ID Budget -->
                     <input type="hidden"
                            th:field="*{id}">
 
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Deskripsi
-                        </label>
-
-                        <input type="text"
-                               th:field="*{description}"
-                               class="form-control"
-                               placeholder="Contoh: Gaji Bulanan"
-                               required>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Jumlah
-                        </label>
-
-                        <div class="input-group">
-
-                            <span class="input-group-text">
-                                Rp
-                            </span>
-
-                            <input type="number"
-                                   th:field="*{amount}"
-                                   class="form-control"
-                                   placeholder="100000"
-                                   required>
-
-                        </div>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Tanggal Transaksi
-                        </label>
-
-                        <input type="date"
-                               th:field="*{transactionDate}"
-                               class="form-control"
-                               required>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Jenis Transaksi
-                        </label>
-
-                        <select th:field="*{type}"
-                                class="form-select"
-                                required>
-
-                            <option value="INCOME">
-                                💰 Pemasukan
-                            </option>
-
-                            <option value="EXPENSE">
-                                💸 Pengeluaran
-                            </option>
-
-                        </select>
-
-                    </div>
-
+                    <!-- Kategori -->
                     <div class="mb-4">
 
                         <label class="form-label">
@@ -253,33 +143,53 @@
                                 class="form-select"
                                 required>
 
-                            <option value="">
-                                Pilih Kategori
-                            </option>
-
-                            <option th:each="category : ${categories}"
-                                    th:value="${category.id}"
-                                    th:text="${category.name}">
+                            <option th:each="c : ${categories}"
+                                    th:value="${c.id}"
+                                    th:text="${c.name}">
                             </option>
 
                         </select>
 
                     </div>
 
+                    <!-- Limit -->
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Limit Budget
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                Rp
+                            </span>
+
+                            <input type="number"
+                                   step="0.01"
+                                   min="0"
+                                   th:field="*{limitAmount}"
+                                   class="form-control"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Tombol -->
                     <div class="d-flex gap-2">
 
                         <button type="submit"
                                 class="btn btn-warning">
 
                             <i class="bi bi-pencil-square"></i>
-                            Update Transaksi
+                            Update Budget
 
                         </button>
 
-                        <a href="/transactions"
+                        <a href="/budgeting"
                            class="btn btn-outline-secondary">
 
-                            <i class="bi bi-arrow-left"></i>
                             Kembali
 
                         </a>
@@ -289,7 +199,6 @@
                 </form>
 
             </div>
-
         </div>
 
     </div>
@@ -299,12 +208,10 @@
 <script>
     const sidebar = document.getElementById("sidebar");
 
-    document.getElementById("toggleBtn")
-        .addEventListener("click", () => {
-            sidebar.classList.toggle("collapsed");
-        });
+    document.getElementById("toggleBtn").addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+    });
 </script>
 
 </body>
 </html>
-```

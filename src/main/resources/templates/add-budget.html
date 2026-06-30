@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Edit Transaksi | DompetKuPlus</title>
+    <title>Tambah Budget | DompetKuPlus</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -42,15 +42,14 @@
             align-items:center;
             gap:12px;
             margin-bottom:8px;
-            transition:.3s;
-        }
-
-        .sidebar-link:hover{
-            background:#1f2937;
         }
 
         .sidebar-link.active{
             background:linear-gradient(135deg,#2563eb,#4f46e5);
+        }
+
+        .sidebar-link:hover{
+            background:#1f2937;
         }
 
         .content{
@@ -70,25 +69,6 @@
             border-radius:20px;
             box-shadow:0 10px 30px rgba(0,0,0,.06);
         }
-
-        .form-control,
-        .form-select{
-            border-radius:12px;
-            min-height:48px;
-        }
-
-        .input-group-text{
-            border-radius:12px 0 0 12px;
-        }
-
-        .btn{
-            border-radius:12px;
-        }
-
-        .form-label{
-            font-weight:600;
-            color:#374151;
-        }
     </style>
 </head>
 
@@ -96,7 +76,6 @@
 
 <div class="d-flex">
 
-    <!-- SIDEBAR -->
     <div id="sidebar" class="p-3">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -121,42 +100,41 @@
         </a>
 
         <a href="/transactions"
-           class="sidebar-link active">
+           class="sidebar-link">
 
             <i class="bi bi-cash-stack"></i>
             <span class="menu-text">Transaksi</span>
 
         </a>
 
-        <a href="#"
-           class="sidebar-link">
+        <a href="/budgeting"
+           class="sidebar-link active">
 
             <i class="bi bi-bullseye"></i>
             <span class="menu-text">Budgeting</span>
 
         </a>
 
-        <a href="/analytics"
+         <a href="/analytics"
            class="sidebar-link">
 
             <i class="bi bi-bar-chart-fill"></i>
             <span class="menu-text">Analytics</span>
 
-        </a>
+        </a>       
 
     </div>
 
-    <!-- CONTENT -->
     <div class="content">
 
         <div class="topbar mb-4">
 
             <h2 class="fw-bold">
-                Edit Transaksi
+                Tambah Budget
             </h2>
 
             <p class="text-muted mb-0">
-                Perbarui data transaksi yang telah tersimpan.
+                Tentukan batas pengeluaran untuk kategori tertentu.
             </p>
 
         </div>
@@ -165,83 +143,9 @@
 
             <div class="card-body p-4">
 
-                <form th:action="@{/transactions/update}"
-                      th:object="${transaction}"
+                <form th:action="@{/budgeting/save}"
+                      th:object="${budget}"
                       method="post">
-
-                    <input type="hidden"
-                           th:field="*{id}">
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Deskripsi
-                        </label>
-
-                        <input type="text"
-                               th:field="*{description}"
-                               class="form-control"
-                               placeholder="Contoh: Gaji Bulanan"
-                               required>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Jumlah
-                        </label>
-
-                        <div class="input-group">
-
-                            <span class="input-group-text">
-                                Rp
-                            </span>
-
-                            <input type="number"
-                                   th:field="*{amount}"
-                                   class="form-control"
-                                   placeholder="100000"
-                                   required>
-
-                        </div>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Tanggal Transaksi
-                        </label>
-
-                        <input type="date"
-                               th:field="*{transactionDate}"
-                               class="form-control"
-                               required>
-
-                    </div>
-
-                    <div class="mb-4">
-
-                        <label class="form-label">
-                            Jenis Transaksi
-                        </label>
-
-                        <select th:field="*{type}"
-                                class="form-select"
-                                required>
-
-                            <option value="INCOME">
-                                💰 Pemasukan
-                            </option>
-
-                            <option value="EXPENSE">
-                                💸 Pengeluaran
-                            </option>
-
-                        </select>
-
-                    </div>
 
                     <div class="mb-4">
 
@@ -257,29 +161,50 @@
                                 Pilih Kategori
                             </option>
 
-                            <option th:each="category : ${categories}"
-                                    th:value="${category.id}"
-                                    th:text="${category.name}">
+                            <option th:each="c : ${categories}"
+                                    th:value="${c.id}"
+                                    th:text="${c.name}">
                             </option>
 
                         </select>
 
                     </div>
 
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Limit Budget
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                Rp
+                            </span>
+
+                            <input type="number"
+                                   th:field="*{limitAmount}"
+                                   class="form-control"
+                                   placeholder="1000000"
+                                   required>
+
+                        </div>
+
+                    </div>
+
                     <div class="d-flex gap-2">
 
                         <button type="submit"
-                                class="btn btn-warning">
+                                class="btn btn-primary">
 
-                            <i class="bi bi-pencil-square"></i>
-                            Update Transaksi
+                            <i class="bi bi-check-circle"></i>
+                            Simpan Budget
 
                         </button>
 
-                        <a href="/transactions"
+                        <a href="/budgeting"
                            class="btn btn-outline-secondary">
 
-                            <i class="bi bi-arrow-left"></i>
                             Kembali
 
                         </a>
@@ -307,4 +232,3 @@
 
 </body>
 </html>
-```

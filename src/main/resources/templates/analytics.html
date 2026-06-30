@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DompetKuPlus - Analytics</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body{
+            background:#f5f7fb;
+            overflow-x:hidden;
+        }
+
+        #sidebar{
+            width:260px;
+            min-height:100vh;
+            background:#111827;
+            transition:.3s;
+        }
+
+        #sidebar.collapsed{
+            width:80px;
+        }
+
+        #sidebar.collapsed .logo-text,
+        #sidebar.collapsed .menu-text{
+            display:none;
+        }
+
+        .sidebar-link{
+            color:white;
+            text-decoration:none;
+            padding:12px 15px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-bottom:8px;
+            transition:.3s;
+        }
+
+        .sidebar-link:hover{
+            background:#1f2937;
+        }
+
+        .sidebar-link.active{
+            background:linear-gradient(135deg,#2563eb,#4f46e5);
+        }
+
+        .content{
+            flex:1;
+            padding:30px;
+        }
+
+        .topbar{
+            background:white;
+            border-radius:20px;
+            padding:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.05);
+        }
+
+        .stat-card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.06);
+        }
+
+        .icon-box{
+            width:60px;
+            height:60px;
+            border-radius:15px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:24px;
+        }
+
+        .income{
+            background:#dcfce7;
+            color:#16a34a;
+        }
+
+        .expense{
+            background:#fee2e2;
+            color:#dc2626;
+        }
+
+        .balance{
+            background:#dbeafe;
+            color:#2563eb;
+        }
+
+        .saving{
+            background:#fef3c7;
+            color:#d97706;
+        }
+
+        .table-card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.06);
+        }
+
+        .badge-card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.06);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="p-3">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="text-white m-0">
+                <span class="logo-text">DompetKuPlus</span>
+            </h4>
+
+            <button id="toggleBtn" class="btn btn-sm btn-light">☰</button>
+        </div>
+
+        <a href="/" class="sidebar-link">
+            <i class="bi bi-grid-fill"></i>
+            <span class="menu-text">Dashboard</span>
+        </a>
+
+        <a href="/transactions" class="sidebar-link">
+            <i class="bi bi-cash-stack"></i>
+            <span class="menu-text">Transaksi</span>
+        </a>
+
+        <a href="/budgeting" class="sidebar-link">
+            <i class="bi bi-bullseye"></i>
+            <span class="menu-text">Budgeting</span>
+        </a>
+
+        <a href="/analytics" class="sidebar-link active">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span class="menu-text">Analytics</span>
+        </a>
+
+    </div>
+
+    <!-- CONTENT -->
+<div class="content">
+
+    <div class="topbar mb-4">
+        <h2 class="fw-bold">Analytics</h2>
+        <p class="text-muted mb-0">
+            Ringkasan kondisi keuangan Anda.
+        </p>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="row g-4">
+
+        <div class="col-lg-3">
+            <div class="card stat-card">
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Total Pemasukan
+                    </small>
+
+                    <h4 class="fw-bold mt-2"
+                        th:text="'Rp ' + ${#numbers.formatDecimal(totalIncome,0,'POINT',0,'COMMA')}">
+                    </h4>
+
+                    <div class="icon-box income mt-3">
+                        <i class="bi bi-arrow-up"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card stat-card">
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Total Pengeluaran
+                    </small>
+
+                    <h4 class="fw-bold mt-2"
+                        th:text="'Rp ' + ${#numbers.formatDecimal(totalExpense,0,'POINT',0,'COMMA')}">
+                    </h4>
+
+                    <div class="icon-box expense mt-3">
+                        <i class="bi bi-arrow-down"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card stat-card">
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Total Saldo
+                    </small>
+
+                    <h4 class="fw-bold mt-2"
+                        th:text="'Rp ' + ${#numbers.formatDecimal(balance,0,'POINT',0,'COMMA')}">
+                    </h4>
+
+                    <div class="icon-box balance mt-3">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card stat-card">
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Saving Rate
+                    </small>
+
+                    <h4 class="fw-bold mt-2"
+                        th:text="${savingRate + '%'}">
+                    </h4>
+
+                    <div class="icon-box saving mt-3">
+                        <i class="bi bi-piggy-bank"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card stat-card">
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Health Score
+                    </small>
+
+                    <h4 class="fw-bold mt-2"
+                        th:text="${healthScore}">
+                    </h4>
+
+                    <div class="icon-box balance mt-3">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BUDGET STATS -->
+    <div class="row mt-4 g-4">
+
+        <div class="col-md-4">
+            <div class="card badge-card">
+                <div class="card-body text-center">
+
+                    <h2 class="text-success fw-bold"
+                        th:text="${safeCount}">
+                    </h2>
+
+                    <p class="mb-0">
+                        Budget Aman
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card badge-card">
+                <div class="card-body text-center">
+
+                    <h2 class="text-warning fw-bold"
+                        th:text="${warningCount}">
+                    </h2>
+
+                    <p class="mb-0">
+                        Budget Warning
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card badge-card">
+                <div class="card-body text-center">
+
+                    <h2 class="text-danger fw-bold"
+                        th:text="${overCount}">
+                    </h2>
+
+                    <p class="mb-0">
+                        Over Budget
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TOP EXPENSE -->
+    <div class="card table-card mt-5">
+        <div class="card-body">
+
+            <h4 class="mb-4">
+                Top 5 Pengeluaran Terbesar
+            </h4>
+
+            <table class="table align-middle">
+
+                <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Kategori</th>
+                    <th>Deskripsi</th>
+                    <th>Nominal</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:if="${#lists.isEmpty(topExpenses)}">
+                    <td colspan="4"
+                        class="text-center text-muted">
+                        Belum ada data
+                    </td>
+                </tr>
+
+                <tr th:each="trx : ${topExpenses}">
+
+                    <td th:text="${#temporals.format(trx.transactionDate,'dd MMM yyyy')}"></td>
+
+                    <td th:text="${trx.category != null ? trx.category.name : '-'}"></td>
+
+                    <td th:text="${trx.description}"></td>
+
+                    <td th:text="${trx.formattedAmount}"></td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    <div class="card mt-4 stat-card">
+        <div class="card-body">
+
+            <h4 class="mb-4">
+                Budget Performance
+            </h4>
+
+            <table class="table align-middle">
+
+                <thead>
+                <tr>
+                    <th>Kategori</th>
+                    <th>Limit</th>
+                    <th>Terpakai</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="b : ${budgetAnalytics}">
+
+                    <td th:text="${b.categoryName}"></td>
+
+                    <td th:text="'Rp ' + ${#numbers.formatDecimal(b.limitAmount,0,'POINT',0,'COMMA')}"></td>
+
+                    <td th:text="'Rp ' + ${#numbers.formatDecimal(b.spentAmount,0,'POINT',0,'COMMA')}"></td>
+
+                    <td width="280">
+
+                        <div class="progress">
+
+                            <div
+                                    class="progress-bar"
+
+                                    th:classappend="
+                                        ${b.status == 'AMAN'} ? ' bg-success' :
+                                        (${b.status == 'WARNING'} ? ' bg-warning' :
+                                        ' bg-danger')"
+
+                                    th:style="'width:' + ${b.percentage > 100 ? 100 : b.percentage} + '%'">
+
+                                <span th:text="${#numbers.formatDecimal(b.percentage,0,0)} + '%'">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                    <td>
+
+                        <span
+                                th:if="${b.status == 'AMAN'}"
+                                class="badge bg-success">
+
+                            Aman
+
+                        </span>
+
+                        <span
+                                th:if="${b.status == 'WARNING'}"
+                                class="badge bg-warning text-dark">
+
+                            Warning
+
+                        </span>
+
+                        <span
+                                th:if="${b.status == 'OVER'}"
+                                class="badge bg-danger">
+
+                            Over Budget
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+
+<div class="card stat-card mt-4">
+    <div class="card-body">
+
+        <h4 class="mb-4">
+            Pemasukan vs Pengeluaran
+        </h4>
+
+        <canvas id="incomeExpenseChart"></canvas>
+
+    </div>
+</div>
+
+<div class="card stat-card mt-4">
+    <div class="card-body">
+
+        <h4 class="mb-4">
+            Distribusi Pengeluaran
+        </h4>
+
+        <canvas id="expensePieChart"></canvas>
+
+    </div>
+</div>
+
+    <!-- INSIGHT -->
+    <div class="card table-card mt-4">
+        <div class="card-body">
+
+            <h4 class="mb-4">
+                Financial Insight
+            </h4>
+
+            <ul class="mb-0">
+
+                <li th:if="${#lists.isEmpty(insights)}">
+                    Belum ada insight
+                </li>
+
+                <li th:each="insight : ${insights}"
+                    th:text="${insight}">
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+
+    const income = [[${chartIncome}]];
+    const expense = [[${chartExpense}]];
+    const expenseByCategory = [[${expenseByCategory}]];
+
+    // BAR CHART
+    new Chart(
+        document.getElementById("incomeExpenseChart"),
+        {
+            type:"bar",
+            data:{
+                labels:["Pemasukan","Pengeluaran"],
+                datasets:[{
+                    data:[income,expense]
+                }]
+            }
+        }
+    );
+
+    // PIE CHART
+    const pieLabels = Object.keys(expenseByCategory);
+    const pieValues = Object.values(expenseByCategory);
+
+    new Chart(
+        document.getElementById("expensePieChart"),
+        {
+            type:"pie",
+            data:{
+                labels:pieLabels,
+                datasets:[{
+                    data:pieValues
+                }]
+            }
+        }
+    );
+
+</script>
+
+</body>
+</html>

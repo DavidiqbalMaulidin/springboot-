@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>DompetKuPlus - Budgeting</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body{
+            background:#f5f7fb;
+            overflow-x:hidden;
+        }
+
+        #sidebar{
+            width:260px;
+            min-height:100vh;
+            background:#111827;
+            transition:.3s;
+        }
+
+        #sidebar.collapsed{
+            width:80px;
+        }
+
+        #sidebar.collapsed .logo-text,
+        #sidebar.collapsed .menu-text{
+            display:none;
+        }
+
+        .sidebar-link{
+            color:white;
+            text-decoration:none;
+            padding:12px 15px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            margin-bottom:8px;
+            transition:.3s;
+        }
+
+        .sidebar-link:hover{
+            background:#1f2937;
+        }
+
+        .sidebar-link.active{
+            background:linear-gradient(135deg,#2563eb,#4f46e5);
+        }
+
+        .content{
+            flex:1;
+            padding:30px;
+        }
+
+        .topbar{
+            background:white;
+            border-radius:20px;
+            padding:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.05);
+        }
+
+        .table-card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,.06);
+        }
+
+        .progress{
+            height:10px;
+            border-radius:20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="p-3">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="text-white m-0">
+                <span class="logo-text">DompetKuPlus</span>
+            </h4>
+
+            <button id="toggleBtn" class="btn btn-sm btn-light">☰</button>
+        </div>
+
+        <a href="/" class="sidebar-link">
+            <i class="bi bi-grid-fill"></i>
+            <span class="menu-text">Dashboard</span>
+        </a>
+
+        <a href="/transactions" class="sidebar-link">
+            <i class="bi bi-cash-stack"></i>
+            <span class="menu-text">Transaksi</span>
+        </a>
+
+        <a href="/budgeting" class="sidebar-link active">
+            <i class="bi bi-bullseye"></i>
+            <span class="menu-text">Budgeting</span>
+        </a>
+
+        <a href="/analytics" class="sidebar-link">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span class="menu-text">Analytics</span>
+        </a>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <div class="topbar mb-4">
+            <h2 class="fw-bold">Budgeting</h2>
+            <p class="text-muted mb-0">Monitoring budget & pengeluaran real-time.</p>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="/budgeting/create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Tambah Budget
+            </a>
+        </div>
+
+        <div class="card table-card">
+            <div class="card-body">
+
+                <table class="table align-middle">
+
+                    <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Kategori</th>
+                        <th>Limit</th>
+                        <th>Pengeluaran</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:if="${budgets == null || #lists.isEmpty(budgets)}">
+                        <td colspan="7" class="text-center text-muted">
+                            Belum ada budget
+                        </td>
+                    </tr>
+
+                    <tr th:each="b, stat : ${budgets}">
+
+                        <td th:text="${stat.count}"></td>
+
+                        <td th:text="${b.category.name}"></td>
+
+                        <!-- LIMIT -->
+                        <td th:text="${'Rp ' + #numbers.formatDecimal(b.limitAmount, 0, 'COMMA', 0, 'POINT')}"></td>
+
+                        <!-- SPENT -->
+                        <td th:text="${'Rp ' + #numbers.formatDecimal(b.spentAmount != null ? b.spentAmount : 0, 0, 'COMMA', 0, 'POINT')}"></td>
+
+                        <!-- PROGRESS -->
+                        <td>
+                            <div class="progress">
+
+                                <div class="progress-bar"
+                                     th:classappend="${
+                                        (b.percentage != null ? b.percentage : 0) < 80 ? ' bg-success' :
+                                        ((b.percentage != null ? b.percentage : 0) < 100 ? ' bg-warning' : ' bg-danger')
+                                     }"
+                                     role="progressbar"
+                                     th:style="'width:' + ${b.percentage != null ? b.percentage : 0} + '%'"
+                                     th:aria-valuenow="${b.percentage != null ? b.percentage : 0}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+
+                            </div>
+
+                            <small th:text="${(b.percentage != null ? T(java.lang.Math).round(b.percentage) : 0)} + '%'"></small>
+                        </td>
+
+                        <!-- STATUS -->
+                        <td>
+
+                            <span class="badge"
+                                  th:classappend="${
+                                      (b.percentage != null ? b.percentage : 0) < 80 ? 'bg-success' :
+                                      ((b.percentage != null ? b.percentage : 0) < 100 ? 'bg-warning' : 'bg-danger')
+                                  }"
+                                  th:text="${
+                                      (b.percentage != null ? b.percentage : 0) < 80 ? 'AMAN' :
+                                      ((b.percentage != null ? b.percentage : 0) < 100 ? 'WARNING' : 'OVER BUDGET')
+                                  }">
+                            </span>
+
+                        </td>
+
+                        <!-- ACTION -->
+                        <td>
+
+                            <a th:href="@{'/budgeting/edit/' + ${b.id}}"
+                               class="btn btn-sm btn-warning">
+                                Edit
+                            </a>
+
+                            <a th:href="@{'/budgeting/delete/' + ${b.id}}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Yakin mau hapus budget ini?')">
+                                Hapus
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const sidebar = document.getElementById("sidebar");
+
+    document.getElementById("toggleBtn").addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+    });
+</script>
+
+</body>
+</html>
